@@ -1,0 +1,11 @@
+{
+  "name": "Onde Comer",
+  "short_name": "Onde Comer",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FFFBF7",
+  "theme_color": "#EB5B2A",
+  "description": "Promoções de estabelecimentos locais",
+  "orientation": "portrait-primary",
+  "icons": []
+}
