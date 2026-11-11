@@ -15,7 +15,7 @@ promoções, favoritos, carrinho e gerenciamento básico de conteúdo.
   usando JSONPlaceholder. O projeto demonstra GET, POST, PUT e DELETE.
 - Endereço, telefone e favoritos são sensíveis/preferências locais e são
   armazenados no dispositivo com `shared_preferences`.
-- Os dados locais não são enviados à API.
+
 
 ## Executar
 
