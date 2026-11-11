@@ -14,7 +14,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PromotionService _service = PromotionService();
+  final TextEditingController _searchController = TextEditingController();
   Future<List<Promotion>>? _promotions;
+  String _selectedCategory = 'Tudo';
+
+  String _promoLabelFor(Promotion restaurant) {
+    final seed = restaurant.id % 5;
+    final labels = <String>[
+      '30% OFF',
+      '2x1',
+      'Chef Pick',
+      'Happy Hour',
+      'Combo +2',
+    ];
+    return labels[seed];
+  }
 
   @override
   void initState() {
@@ -22,139 +36,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _promotions = _service.fetchPromotions();
   }
 
-  void _reload() {
-    setState(() => _promotions = _service.fetchPromotions());
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
-  Future<void> _showRestaurantForm() async {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final imageUrlController = TextEditingController(
-      text: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
-    );
-    final menuController = TextEditingController();
-    final locationController = TextEditingController();
-    final scheduleController = TextEditingController();
-    final parkingController = TextEditingController();
-
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Adicionar restaurante',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Nome do restaurante'),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Descrição'),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: imageUrlController,
-                  decoration: const InputDecoration(labelText: 'URL da imagem'),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: menuController,
-                  decoration: const InputDecoration(labelText: 'Cardápio'),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: locationController,
-                  decoration: const InputDecoration(labelText: 'Localização'),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: scheduleController,
-                  decoration: const InputDecoration(labelText: 'Horário de funcionamento'),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: parkingController,
-                  decoration: const InputDecoration(labelText: 'Estacionamento'),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () async {
-                      final title = titleController.text.trim();
-                      final description = descriptionController.text.trim();
-                      final imageUrl = imageUrlController.text.trim();
-                      final menu = menuController.text.trim();
-                      final location = locationController.text.trim();
-                      final schedule = scheduleController.text.trim();
-                      final parking = parkingController.text.trim();
-
-                      if (title.isEmpty || description.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Nome e descrição são obrigatórios.')),
-                        );
-                        return;
-                      }
-
-                      try {
-                        final created = await _service.createPromotion(
-                          Promotion(
-                            id: DateTime.now().millisecondsSinceEpoch,
-                            title: title,
-                            description: description,
-                            price: 0,
-                            imageUrl: imageUrl.isEmpty
-                                ? 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80'
-                                : imageUrl,
-                            menu: menu.isEmpty ? 'Pratos especiais da casa' : menu,
-                            location: location.isEmpty ? 'São Paulo/SP' : location,
-                            schedule: schedule.isEmpty ? 'Horário a confirmar' : schedule,
-                            parking: parking.isEmpty ? 'Estacionamento disponível' : parking,
-                          ),
-                        );
-
-                        if (!mounted) return;
-                        Navigator.of(context, rootNavigator: true).pop(true);
-                        if (created.id != 0) {
-                          _reload();
-                        }
-                      } catch (error) {
-                        if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(error.toString())),
-                        );
-                      }
-                    },
-                    child: const Text('Salvar restaurante'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (result == true) {
-      _reload();
-    }
+  void _reload() {
+    setState(() => _promotions = _service.fetchPromotions());
   }
 
   @override
@@ -207,6 +96,39 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             final restaurants = snapshot.data ?? const <Promotion>[];
+            final query = _searchController.text.trim();
+            final filteredRestaurants = restaurants.where((restaurant) {
+              final title = restaurant.title.toLowerCase();
+              final description = restaurant.description.toLowerCase();
+              final matchesQuery = query.isEmpty ||
+                  title.startsWith(query.toLowerCase()) ||
+                  title.contains(query.toLowerCase()) ||
+                  description.contains(query.toLowerCase());
+
+              if (!matchesQuery) {
+                return false;
+              }
+
+              if (_selectedCategory == 'Tudo') {
+                return true;
+              }
+
+              final categoryLower = _selectedCategory.toLowerCase();
+              if (categoryLower == 'japonesa') {
+                return title.contains('jam') || description.contains('japonesa') || title.contains('japanese');
+              }
+              if (categoryLower == 'italiana') {
+                return title.contains('aguzzo') || description.contains('italiana');
+              }
+              if (categoryLower == 'bacalhau') {
+                return title.contains('bacalhau') || description.contains('bacalhau');
+              }
+              if (categoryLower == 'top') {
+                return title.contains('adega') || title.contains('hub') || title.contains('jam') || title.contains('aguzzo');
+              }
+
+              return true;
+            }).toList();
 
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -259,16 +181,55 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: const Color(0xFFC7E5D4),
                             ),
                       ),
+                      const SizedBox(height: 18),
+                      TextField(
+                        controller: _searchController,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          hintText: 'Buscar restaurante por inicial (ex.: J)',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          suffixIcon: _searchController.text.isEmpty
+                              ? null
+                              : IconButton(
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() {});
+                                  },
+                                  icon: const Icon(Icons.clear_rounded),
+                                ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children: const [
-                            _FilterChip(label: 'Tudo'),
-                            _FilterChip(label: 'Japonesa'),
-                            _FilterChip(label: 'Italiano'),
-                            _FilterChip(label: 'Bacalhau'),
-                            _FilterChip(label: 'Top'),
+                          children: [
+                            _FilterChip(
+                              label: 'Tudo',
+                              selected: _selectedCategory == 'Tudo',
+                              onTap: () => setState(() => _selectedCategory = 'Tudo'),
+                            ),
+                            _FilterChip(
+                              label: 'Japonesa',
+                              selected: _selectedCategory == 'Japonesa',
+                              onTap: () => setState(() => _selectedCategory = 'Japonesa'),
+                            ),
+                            _FilterChip(
+                              label: 'Italiana',
+                              selected: _selectedCategory == 'Italiana',
+                              onTap: () => setState(() => _selectedCategory = 'Italiana'),
+                            ),
+                            _FilterChip(
+                              label: 'Bacalhau',
+                              selected: _selectedCategory == 'Bacalhau',
+                              onTap: () => setState(() => _selectedCategory = 'Bacalhau'),
+                            ),
+                            _FilterChip(
+                              label: 'Top',
+                              selected: _selectedCategory == 'Top',
+                              onTap: () => setState(() => _selectedCategory = 'Top'),
+                            ),
                           ],
                         ),
                       ),
@@ -276,88 +237,109 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                ...restaurants.map((restaurant) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(24),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => RestaurantDetailScreen(
-                              restaurant: restaurant,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: const Color(0xFF294C3F)),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x33000000),
-                              blurRadius: 18,
-                              offset: Offset(0, 10),
-                            ),
-                          ],
+                if (filteredRestaurants.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF17231F),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFF2D413C)),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.search_off_rounded, size: 36, color: Color(0xFF8AE6A8)),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Nenhum restaurante encontrado para "$query".',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Color(0xFFE8F0EC)),
                         ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: Image.network(
-                                restaurant.imageUrl,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const ColoredBox(
-                                  color: Color(0xFFEDE7E1),
-                                  child: Icon(Icons.restaurant, size: 48),
-                                ),
+                      ],
+                    ),
+                  )
+                else
+                  ...filteredRestaurants.map((restaurant) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => RestaurantDetailScreen(
+                                restaurant: restaurant,
                               ),
                             ),
-                            Container(
-                              width: double.infinity,
-                              color: const Color(0xFF18241F),
-                              padding: const EdgeInsets.all(14),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          restaurant.title,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w800,
-                                            color: Color(0xFFF1FAF4),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF2DBE6A).withOpacity(0.16),
-                                          borderRadius: BorderRadius.circular(999),
-                                        ),
-                                        child: const Text(
-                                          '30% OFF',
-                                          style: TextStyle(
-                                            color: Color(0xFF9AE8B5),
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: const Color(0xFF294C3F)),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x33000000),
+                                blurRadius: 18,
+                                offset: Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Image.network(
+                                  restaurant.imageUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => const ColoredBox(
+                                    color: Color(0xFFEDE7E1),
+                                    child: Icon(Icons.restaurant, size: 48),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
+                                ),
+                              ),
+                              Container(
+                                width: double.infinity,
+                                color: const Color(0xFF18241F),
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            restaurant.title,
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w800,
+                                              color: Color(0xFFF1FAF4),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF2DBE6A).withValues(alpha: 0.16),
+                                            borderRadius: BorderRadius.circular(999),
+                                          ),
+                                          child: Text(
+                                            _promoLabelFor(restaurant),
+                                            style: const TextStyle(
+                                              color: Color(0xFF9AE8B5),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 11,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
                                     restaurant.description,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -395,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             );
           },
@@ -406,26 +388,37 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label});
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1D322B),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFF395F4F)),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Color(0xFFEAF8F0),
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF2DBE6A) : const Color(0xFF1D322B),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: selected ? const Color(0xFF8AE6A8) : const Color(0xFF395F4F),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? const Color(0xFF062C17) : const Color(0xFFEAF8F0),
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );

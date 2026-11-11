@@ -9,7 +9,10 @@ class PromotionService {
   PromotionService({http.Client? client, String? baseUrl})
       : _client = client ?? http.Client(),
         _baseUrl = baseUrl ??
-            (kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000');
+            const String.fromEnvironment(
+              'API_BASE_URL',
+              defaultValue: kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000',
+            );
 
   static const List<Promotion> _defaultPromotions = [
     Promotion(
