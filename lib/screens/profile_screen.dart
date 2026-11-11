@@ -14,8 +14,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _cepController = TextEditingController();
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _reservationController = TextEditingController();
   bool _loading = true;
+  bool _profileSaved = false;
   String _displayName = 'Cliente';
 
   @override
@@ -31,40 +31,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _cepController.text = customer['cep'] ?? '';
     _addressController.text = customer['address'] ?? '';
     _phoneController.text = customer['phone'] ?? '';
-    _reservationController.text = customer['reservationTime'] ?? '';
     _displayName = savedName.trim().isNotEmpty ? savedName : 'Cliente';
+    _profileSaved = _hasAnySavedData();
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _selectReservationDateTime() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-
-    if (date == null || !mounted) return;
-
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-
-    if (time == null || !mounted) return;
-
-    final selectedDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    );
-
-    final formatted =
-        '${selectedDateTime.day.toString().padLeft(2, '0')}/${selectedDateTime.month.toString().padLeft(2, '0')}/${selectedDateTime.year} • ${selectedDateTime.hour.toString().padLeft(2, '0')}:${selectedDateTime.minute.toString().padLeft(2, '0')}';
-
-    _reservationController.text = formatted;
+  bool _hasAnySavedData() {
+    return _nameController.text.trim().isNotEmpty ||
+        _cepController.text.trim().isNotEmpty ||
+        _addressController.text.trim().isNotEmpty ||
+        _phoneController.text.trim().isNotEmpty;
   }
 
   Future<void> _save() async {
@@ -72,7 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final cep = _cepController.text.trim();
     final address = _addressController.text.trim();
     final phone = _phoneController.text.trim().replaceAll(RegExp(r'[^0-9+]'), '');
-    final reservationTime = _reservationController.text.trim();
 
     if (name.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,14 +82,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       cep: cep,
       address: address,
       phone: phone,
-      reservationTime: reservationTime,
+      reservationTime: '',
     );
 
-    setState(() => _displayName = name);
+    setState(() {
+      _displayName = name;
+      _profileSaved = true;
+    });
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Perfil salvo neste dispositivo')),
+      const SnackBar(content: Text('Dados salvos. Você pode editar ou excluir quando quiser.')),
+    );
+  }
+
+  Future<void> _editSavedProfile() async {
+    final customer = await _storage.getCustomer();
+    _nameController.text = customer['name'] ?? '';
+    _cepController.text = customer['cep'] ?? '';
+    _addressController.text = customer['address'] ?? '';
+    _phoneController.text = customer['phone'] ?? '';
+    setState(() => _profileSaved = true);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Dados carregados para edição.')),
     );
   }
 
@@ -122,9 +113,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Apagar dados locais?'),
+        title: const Text('Excluir informações salvas?'),
         content: const Text(
-          'O nome, CEP, endereço, telefone e horário serão removidos deste aparelho.',
+          'Seu nome, CEP, endereço e telefone serão removidos deste aparelho.',
         ),
         actions: [
           TextButton(
@@ -133,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Apagar'),
+            child: const Text('Excluir'),
           ),
         ],
       ),
@@ -144,11 +135,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _cepController.clear();
     _addressController.clear();
     _phoneController.clear();
-    _reservationController.clear();
-    setState(() => _displayName = 'Cliente');
+    setState(() {
+      _displayName = 'Cliente';
+      _profileSaved = false;
+    });
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Dados locais removidos')),
+      const SnackBar(content: Text('Informações removidas')),
     );
   }
 
@@ -158,8 +151,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _cepController.dispose();
     _addressController.dispose();
     _phoneController.dispose();
-    _reservationController.dispose();
     super.dispose();
+  }
+
+  Widget _savedProfileCard() {
+    final name = _nameController.text.trim();
+    final cep = _cepController.text.trim();
+    final address = _addressController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (!_profileSaved || name.isEmpty && cep.isEmpty && address.isEmpty && phone.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(top: 18),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: const [
+                Icon(Icons.person_pin_rounded, color: Color(0xFF2DBE6A)),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Dados salvos',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _InfoRow(label: 'Nome', value: name.isEmpty ? '—' : name),
+            _InfoRow(label: 'CEP', value: cep.isEmpty ? '—' : cep),
+            _InfoRow(label: 'Endereço', value: address.isEmpty ? '—' : address),
+            _InfoRow(label: 'Telefone', value: phone.isEmpty ? '—' : phone),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: _editSavedProfile,
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Editar'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: _clear,
+                    icon: const Icon(Icons.delete_outline),
+                    label: const Text('Excluir'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -190,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFFF4FBF7),
+                          color: Color(0xFF163026),
                         ),
                       ),
                     ],
@@ -204,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  'Preencha seu perfil com nome, endereço, CEP e horário para uma experiência mais rápida.',
+                  'Preencha seu perfil e salve seus dados para editar ou excluir depois.',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -244,19 +296,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   keyboardType: TextInputType.phone,
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _reservationController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: 'Horário para reserva',
-                    prefixIcon: const Icon(Icons.schedule_outlined),
-                    suffixIcon: IconButton(
-                      onPressed: _selectReservationDateTime,
-                      icon: const Icon(Icons.calendar_today_outlined),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 20),
                 FilledButton.icon(
                   onPressed: _save,
@@ -269,8 +308,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: const Icon(Icons.delete_outline),
                   label: const Text('Apagar dados locais'),
                 ),
+                _savedProfileCard(),
               ],
             ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF6A7F78),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF163026),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

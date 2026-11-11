@@ -5,7 +5,7 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final features = [
+    final features = const [
       'Busca inteligente por restaurante',
       'Lista visual de promoções e cardápios',
       'Reservas e agendamento de horários',
@@ -28,13 +28,16 @@ class AboutScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF173227), Color(0xFF0F1714)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: const Color(0xFFF5F7F5),
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: const Color(0xFF345847)),
+                  border: Border.all(color: const Color(0xFFE1EAE5)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0F000000),
+                      blurRadius: 14,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +47,7 @@ class AboutScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFFF5F7F4),
+                        color: Color(0xFF163026),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -53,7 +56,7 @@ class AboutScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         height: 1.7,
-                        color: Color(0xFFE4F0E8),
+                        color: Color(0xFF2B443B),
                       ),
                     ),
                     const SizedBox(height: 18),
@@ -76,7 +79,7 @@ class AboutScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFFF6FBF8),
+                  color: Color(0xFF163026),
                 ),
               ),
               const SizedBox(height: 14),
@@ -85,16 +88,16 @@ class AboutScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF17231F),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFF2C413A)),
+                    border: Border.all(color: const Color(0xFFE2EAE6)),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(
                         Icons.check_circle_rounded,
-                        color: Color(0xFF8AE6A8),
+                        color: Color(0xFF2DBE6A),
                         size: 18,
                       ),
                       const SizedBox(width: 10),
@@ -104,7 +107,7 @@ class AboutScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 15,
                             height: 1.5,
-                            color: Color(0xFFEAF4EE),
+                            color: Color(0xFF234132),
                           ),
                         ),
                       ),
@@ -117,9 +120,9 @@ class AboutScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF17231F),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF2C413A)),
+                  border: Border.all(color: const Color(0xFFE2EAE6)),
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +132,7 @@ class AboutScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFFF2FAF5),
+                        color: Color(0xFF163026),
                       ),
                     ),
                     SizedBox(height: 8),
@@ -138,7 +141,7 @@ class AboutScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         height: 1.7,
-                        color: Color(0xFFE0EAE4),
+                        color: Color(0xFF234132),
                       ),
                     ),
                   ],
@@ -162,14 +165,14 @@ class _Pill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF234A3A),
+        color: const Color(0xFFDEF5E8),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: const TextStyle(
-          color: Color(0xFFF0F9F4),
-          fontWeight: FontWeight.w600,
+          color: Color(0xFF0E5D3D),
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

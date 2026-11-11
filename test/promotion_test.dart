@@ -12,7 +12,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
   test('Promotion serializes public API fields', () {
-    final promotion = Promotion(
+    const promotion = Promotion(
       id: 10,
       title: 'Feijoada da casa',
       description: 'Porção completa',
@@ -28,7 +28,7 @@ void main() {
   });
 
   test('Promotion copyWith updates only selected fields', () {
-    final promotion = Promotion(
+    const promotion = Promotion(
       id: 1,
       title: 'Original',
       description: 'Descrição',

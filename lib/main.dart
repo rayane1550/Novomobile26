@@ -16,36 +16,36 @@ class OndeComerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2DBE6A),
-          brightness: Brightness.dark,
+          brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: const Color(0xFF0F1714),
+        scaffoldBackgroundColor: const Color(0xFFF5F7F6),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF101B18),
-          foregroundColor: Color(0xFFF1F9F4),
+          backgroundColor: Colors.white,
+          foregroundColor: Color(0xFF163026),
           elevation: 0,
         ),
         cardTheme: const CardThemeData(
-          color: Color(0xFF17201D),
+          color: Colors.white,
           elevation: 0,
           margin: EdgeInsets.zero,
         ),
         dialogTheme: const DialogThemeData(
-          backgroundColor: Color(0xFF17201D),
+          backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
         ),
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
-          fillColor: Color(0xFF1D2C27),
-          hintStyle: TextStyle(color: Color(0xFFCCE7D7)),
-          labelStyle: TextStyle(color: Color(0xFFF1F9F4)),
+          fillColor: Color(0xFFF8FAF9),
+          hintStyle: TextStyle(color: Color(0xFF6A7F78)),
+          labelStyle: TextStyle(color: Color(0xFF163026)),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF4A7C65)),
+            borderSide: BorderSide(color: Color(0xFFB7D3C4)),
           ),
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF59D38A)),
+            borderSide: BorderSide(color: Color(0xFF2DBE6A)),
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(

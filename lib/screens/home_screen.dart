@@ -19,15 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'Tudo';
 
   String _promoLabelFor(Promotion restaurant) {
-    final seed = restaurant.id % 5;
-    final labels = <String>[
-      '30% OFF',
-      '2x1',
-      'Chef Pick',
-      'Happy Hour',
-      'Combo +2',
-    ];
-    return labels[seed];
+    final seed = restaurant.id % 13;
+    final discount = 5 + seed * 5;
+    return '$discount% OFF';
   }
 
   @override
@@ -138,12 +132,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF1C3127), Color(0xFF0E1715)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    border: Border.all(color: const Color(0xFF325A4A)),
+                    color: const Color(0xFFFFFFFF),
+                    border: Border.all(color: const Color(0xFFE2EAE6)),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0F000000),
+                        blurRadius: 12,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,14 +149,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const Icon(
                             Icons.location_on_outlined,
-                            color: Color(0xFF8AE6A8),
+                            color: Color(0xFF2DBE6A),
                             size: 18,
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'São Paulo, SP',
+                            'Brasil',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: const Color(0xFFD9F5E6),
+                                  color: const Color(0xFF1B3D2D),
                                   fontWeight: FontWeight.w600,
                                 ),
                           ),
@@ -170,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         'Sabores perto de você',
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFFF4FBF7),
+                              color: const Color(0xFF163026),
                               letterSpacing: -0.8,
                             ),
                       ),
@@ -178,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         'Descubra restaurantes, pratos e promoções do dia',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: const Color(0xFFC7E5D4),
+                              color: const Color(0xFF5B736A),
                             ),
                       ),
                       const SizedBox(height: 18),
@@ -241,18 +238,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17231F),
+                      color: const Color(0xFFFFFFFF),
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFF2D413C)),
+                      border: Border.all(color: const Color(0xFFE1EAE5)),
                     ),
                     child: Column(
                       children: [
-                        const Icon(Icons.search_off_rounded, size: 36, color: Color(0xFF8AE6A8)),
+                        const Icon(Icons.search_off_rounded, size: 36, color: Color(0xFF2DBE6A)),
                         const SizedBox(height: 10),
                         Text(
                           'Nenhum restaurante encontrado para "$query".',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Color(0xFFE8F0EC)),
+                          style: const TextStyle(color: Color(0xFF163026)),
                         ),
                       ],
                     ),
@@ -275,10 +272,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: const Color(0xFF294C3F)),
+                            color: Colors.white,
+                            border: Border.all(color: const Color(0xFFE2EAE6)),
                             boxShadow: const [
                               BoxShadow(
-                                color: Color(0x33000000),
+                                color: Color(0x14000000),
                                 blurRadius: 18,
                                 offset: Offset(0, 10),
                               ),
@@ -288,8 +286,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AspectRatio(
-                                aspectRatio: 16 / 9,
+                              SizedBox(
+                                height: 180,
+                                width: double.infinity,
                                 child: Image.network(
                                   restaurant.imageUrl,
                                   fit: BoxFit.cover,
@@ -301,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Container(
                                 width: double.infinity,
-                                color: const Color(0xFF18241F),
+                                color: const Color(0xFFFFFFFF),
                                 padding: const EdgeInsets.all(14),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             style: const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w800,
-                                              color: Color(0xFFF1FAF4),
+                                              color: Color(0xFF163026),
                                             ),
                                           ),
                                         ),
@@ -324,13 +323,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             vertical: 6,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFF2DBE6A).withValues(alpha: 0.16),
+                                            color: const Color(0xFF2DBE6A).withValues(alpha: 0.14),
                                             borderRadius: BorderRadius.circular(999),
                                           ),
                                           child: Text(
                                             _promoLabelFor(restaurant),
                                             style: const TextStyle(
-                                              color: Color(0xFF9AE8B5),
+                                              color: Color(0xFF0D6B42),
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
                                             ),
@@ -340,44 +339,148 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                    restaurant.description,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Color(0xFFCFDDD3),
-                                      height: 1.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on_outlined,
-                                        size: 16,
-                                        color: Color(0xFF8AE6A8),
+                                      restaurant.description,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Color(0xFF4F645D),
+                                        height: 1.5,
                                       ),
-                                      const SizedBox(width: 6),
-                                      Expanded(
-                                        child: Text(
-                                          restaurant.location,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Color(0xFFD9F5E6),
-                                            fontSize: 12,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.location_on_outlined,
+                                          size: 16,
+                                          color: Color(0xFF2DBE6A),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            restaurant.location,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Color(0xFF3D5A52),
+                                              fontSize: 12,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                const SizedBox(height: 26),
+                if (filteredRestaurants.length >= 2)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Os melhores restaurantes de\nCampinas',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1A1A1A),
+                            height: 1.15,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredRestaurants.length > 4 ? 4 : filteredRestaurants.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 18,
+                            mainAxisSpacing: 22,
+                            childAspectRatio: 1.08,
+                          ),
+                          itemBuilder: (context, index) {
+                            final restaurant = filteredRestaurants[index];
+                            final label = index % 4 == 0
+                                ? 'Lanches'
+                                : index % 4 == 1
+                                    ? 'Brasileira'
+                                    : index % 4 == 2
+                                        ? 'Lanches'
+                                        : 'Brasileira';
+
+                            return InkWell(
+                              borderRadius: BorderRadius.circular(24),
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => RestaurantDetailScreen(
+                                    restaurant: restaurant,
+                                  ),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(22),
+                                            child: Image.network(
+                                              restaurant.imageUrl,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => const ColoredBox(
+                                                color: Color(0xFFEDE7E1),
+                                                child: Icon(Icons.restaurant, size: 48),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 12,
+                                          left: 12,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFF5D94E),
+                                              borderRadius: BorderRadius.circular(999),
+                                            ),
+                                            child: Text(
+                                              label,
+                                              style: const TextStyle(
+                                                color: Color(0xFF1A1A1A),
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    restaurant.title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF1A1A1A),
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      ),
+                      ],
                     ),
-                  );
-                }),
+                  ),
               ],
             );
           },
@@ -406,16 +509,16 @@ class _FilterChip extends StatelessWidget {
         margin: const EdgeInsets.only(right: 10),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2DBE6A) : const Color(0xFF1D322B),
+          color: selected ? const Color(0xFF2DBE6A) : const Color(0xFFF4F9F6),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected ? const Color(0xFF8AE6A8) : const Color(0xFF395F4F),
+            color: selected ? const Color(0xFF5BCF8D) : const Color(0xFFD9E6E0),
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? const Color(0xFF062C17) : const Color(0xFFEAF8F0),
+            color: selected ? const Color(0xFF062C17) : const Color(0xFF1A332D),
             fontSize: 12,
             fontWeight: FontWeight.w700,
           ),

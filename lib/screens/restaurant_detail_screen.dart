@@ -171,18 +171,18 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFF4FBF7),
+                      color: Color(0xFF163026),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      const Icon(Icons.star, color: Color(0xFFFFD166), size: 18),
+                      const Icon(Icons.star, color: Color(0xFFFFB703), size: 18),
                       const SizedBox(width: 6),
                       Text(
                         _averageRating.toStringAsFixed(1),
                         style: const TextStyle(
-                          color: Color(0xFFDDEFE3),
+                          color: Color(0xFF24513E),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -193,14 +193,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17231F),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFF335749)),
+                      border: Border.all(color: const Color(0xFFE2EAE6)),
                     ),
                     child: Text(
                       widget.restaurant.description,
                       style: const TextStyle(
-                        color: Color(0xFFE8F0EC),
+                        color: Color(0xFF234132),
                         height: 1.6,
                       ),
                     ),
@@ -244,16 +244,16 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFFF3FBF6),
+                      color: Color(0xFF163026),
                     ),
                   ),
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF17231F),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFF2E453F)),
+                      border: Border.all(color: const Color(0xFFE2EAE6)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +261,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         const Text(
                           'Sua avaliação',
                           style: TextStyle(
-                            color: Color(0xFFF0F8F3),
+                            color: Color(0xFF163026),
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -334,9 +334,9 @@ class _ReviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF17231F),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF2E453F)),
+        border: Border.all(color: const Color(0xFFE2EAE6)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,7 +348,7 @@ class _ReviewCard extends StatelessWidget {
                 review.author,
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFFEFF7F2),
+                  color: Color(0xFF163026),
                 ),
               ),
               Row(
@@ -367,7 +367,7 @@ class _ReviewCard extends StatelessWidget {
           Text(
             review.comment,
             style: const TextStyle(
-              color: Color(0xFFE5EFE9),
+              color: Color(0xFF234132),
               height: 1.6,
             ),
           ),
@@ -378,13 +378,13 @@ class _ReviewCard extends StatelessWidget {
                 onPressed: onLike,
                 icon: Icon(
                   review.likedByMe ? Icons.thumb_up_alt_rounded : Icons.thumb_up_alt_outlined,
-                  color: Color(review.likedByMe ? 0xFF8AE6A8 : 0xFFDCEDE4),
+                  color: Color(review.likedByMe ? 0xFF2DBE6A : 0xFF5B736A),
                 ),
               ),
               Text(
                 '${review.likes}',
                 style: const TextStyle(
-                  color: Color(0xFFDDEDE4),
+                  color: Color(0xFF24513E),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -412,14 +412,14 @@ class _InfoRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF17231F),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2D413C)),
+        border: Border.all(color: const Color(0xFFE2EAE6)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF8AE6A8), size: 20),
+          Icon(icon, color: const Color(0xFF2DBE6A), size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -429,14 +429,14 @@ class _InfoRow extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFFF3FBF6),
+                    color: Color(0xFF163026),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   value,
                   style: const TextStyle(
-                    color: Color(0xFFDCEAE3),
+                    color: Color(0xFF234132),
                     height: 1.5,
                   ),
                 ),
